@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String   @id @default(cuid())
+  email                  String   @unique
+  passwordHash           String?
+  googleId               String?  @unique
+  shopName               String
+  generatorLitersPerHour Float    @default(1.2)
+  fuelPricePerLiter      Float    @default(115)
+  hasGenerator           Boolean  @default(true)
+  hasSolar               Boolean  @default(false)
+  solarStartMinutes      Int?
+  solarEndMinutes        Int?
+  createdAt              DateTime @default(now())
+  plans                  Plan[]
+  meterReadings          MeterReading[]
+}
+
+model Plan {
+  id                     String   @id @default(cuid())
+  userId                 String
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label                  String
+  shopOpenMinutes        Int
+  shopCloseMinutes       Int
+  generatorLitersPerHour Float
+  fuelPricePerLiter      Float
+  hasGenerator           Boolean  @default(true)
+  hasSolar               Boolean  @default(false)
+  solarStartMinutes      Int?
+  solarEndMinutes        Int?
+  feasible               Boolean?
+  totalGeneratorMinutes  Int?
+  totalSolarMinutes      Int?
+  totalGeneratorCost     Float?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  cuts                   Cut[]
+  jobs                   Job[]
+}
+
+model Cut {
+  id           String @id @default(cuid())
+  planId       String
+  plan         Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  startMinutes Int
+  endMinutes   Int
+}
+
+model Job {
+  id               String  @id @default(cuid())
+  planId           String
+  plan             Plan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  name             String
+  minutes          Int
+  power            String
+  scheduledStart   Int?
+  scheduledEnd     Int?
+  actualPower      String?
+  sequence         Int?
+  unscheduled      Boolean @default(false)
+  manuallyPlaced   Boolean @default(false)
+  attachmentPath   String?
+  attachmentName   String?
+  attachmentMime   String?
+}
+
+model MeterReading {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       DateTime
+  readingKwh Float
+  note       String?
+  createdAt  DateTime @default(now())
+}
