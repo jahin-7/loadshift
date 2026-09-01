@@ -205,33 +205,6 @@ router.get('/plans/:id', async (req, res) => {
   res.json({ plan: serializePlan(plan) });
 });
 
-router.put('/plans/:id', async (req, res) => {
-  const parsed = planInputSchema.safeParse(req.body);
-  if (!parsed.success) throw new ApiError(422, parsed.error.issues[0]?.message ?? 'Invalid plan data.');
-  const input = parsed.data;
-
-  const existing = await loadOwnedPlan(req.params.id!, req.userId!);
-
-  await prisma.$transaction([
-    prisma.cut.deleteMany({ where: { planId: existing.id } }),
-    prisma.job.deleteMany({ where: { planId: existing.id } }),
-    prisma.plan.update({
-      where: { id: existing.id },
-      data: {
-        label: input.label,
-        shopOpenMinutes: parseTime(input.shopOpen),
-        shopCloseMinutes: parseTime(input.shopClose),
-        cuts: { create: input.cuts.map((c) => ({ startMinutes: parseTime(c.start), endMinutes: parseTime(c.end) })) },
-        jobs: { create: input.jobs.map((j) => ({ name: j.name, minutes: j.minutes, power: j.power })) },
-      },
-    }),
-  ]);
-
-  const reloaded = await loadOwnedPlan(existing.id, req.userId!);
-  const scheduled = await autoScheduleAndPersist(reloaded);
-  res.json({ plan: serializePlan(scheduled) });
-});
-
 router.post('/plans/:id/auto-schedule', async (req, res) => {
   const plan = await loadOwnedPlan(req.params.id!, req.userId!);
   const scheduled = await autoScheduleAndPersist(plan);

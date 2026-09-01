@@ -154,10 +154,6 @@ export function createPlan(input: PlanInput) {
   return request<{ plan: PlanDetail }>('/plans', { method: 'POST', body: JSON.stringify(input) });
 }
 
-export function updatePlan(id: string, input: PlanInput) {
-  return request<{ plan: PlanDetail }>(`/plans/${id}`, { method: 'PUT', body: JSON.stringify(input) });
-}
-
 export function autoSchedule(id: string) {
   return request<{ plan: PlanDetail }>(`/plans/${id}/auto-schedule`, { method: 'POST' });
 }
