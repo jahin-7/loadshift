@@ -64,6 +64,7 @@ export default function MeterView() {
   }
 
   async function handleDelete(id: string) {
+    if (!window.confirm('Delete this meter reading? This cannot be undone.')) return;
     try {
       await api.deleteMeterReading(id);
       setReadings((prev) => prev?.filter((r) => r.id !== id) ?? null);
@@ -124,32 +125,34 @@ export default function MeterView() {
       )}
 
       {rows.length > 0 && (
-        <table className="job-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Reading</th>
-              <th>Since previous</th>
-              <th>Note</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {[...rows].reverse().map(({ reading, usage, days }) => (
-              <tr key={reading.id}>
-                <td>{reading.date}</td>
-                <td>{reading.readingKwh.toFixed(1)} kWh</td>
-                <td>{usage === null ? '—' : `${usage.toFixed(1)} kWh over ${days} day${days === 1 ? '' : 's'}`}</td>
-                <td>{reading.note ?? ''}</td>
-                <td>
-                  <button type="button" className="link-button" onClick={() => handleDelete(reading.id)}>
-                    Delete
-                  </button>
-                </td>
+        <div className="job-table-scroll">
+          <table className="job-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Reading</th>
+                <th>Since previous</th>
+                <th>Note</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {[...rows].reverse().map(({ reading, usage, days }) => (
+                <tr key={reading.id}>
+                  <td>{reading.date}</td>
+                  <td>{reading.readingKwh.toFixed(1)} kWh</td>
+                  <td>{usage === null ? '—' : `${usage.toFixed(1)} kWh over ${days} day${days === 1 ? '' : 's'}`}</td>
+                  <td>{reading.note ?? ''}</td>
+                  <td>
+                    <button type="button" className="link-button" onClick={() => handleDelete(reading.id)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

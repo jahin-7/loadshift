@@ -94,6 +94,7 @@ export default function PlanView({ planId }: PlanViewProps) {
   }
 
   async function handleRemoveAttachment(jobId: string) {
+    if (!window.confirm('Remove this attachment? This cannot be undone.')) return;
     try {
       await api.deleteAttachment(planId, jobId);
       const { plan: reloaded } = await api.getPlan(planId);
@@ -156,79 +157,81 @@ export default function PlanView({ planId }: PlanViewProps) {
 
       {attachmentError && <div className="form-error">{attachmentError}</div>}
 
-      <table className="job-table">
-        <thead>
-          <tr>
-            <th>Job</th>
-            <th>Length</th>
-            <th>Power</th>
-            <th>Start time</th>
-            <th>Ran on</th>
-            <th>Document</th>
-          </tr>
-        </thead>
-        <tbody>
-          {plan.jobs.map((job) => (
-            <tr key={job.id} className={selectedJobId === job.id ? 'is-selected' : ''}>
-              <td>{job.name}</td>
-              <td>{job.minutes} min</td>
-              <td>{job.power}</td>
-              <td>
-                <input
-                  type="time"
-                  value={overrides[job.id] ?? job.scheduledStart ?? ''}
-                  onChange={(e) => setOverrides((prev) => ({ ...prev, [job.id]: e.target.value }))}
-                />
-              </td>
-              <td>
-                {job.unscheduled ? (
-                  <span className="badge badge--warn">Unscheduled</span>
-                ) : (
-                  <span className={`badge badge--${job.actualPower}`}>{job.actualPower}</span>
-                )}
-              </td>
-              <td>
-                {job.attachment ? (
-                  <span className="job-table__file">
-                    <button
-                      type="button"
-                      className="link-button"
-                      onClick={() => api.downloadAttachment(planId, job.id, job.attachment!.name)}
-                    >
-                      {job.attachment.name}
-                    </button>
-                    <button type="button" className="link-button" onClick={() => handleRemoveAttachment(job.id)}>
-                      Remove
-                    </button>
-                  </span>
-                ) : (
-                  <label className="job-table__attach">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M18 8.5v7a5 5 0 0 1-10 0V6a3 3 0 0 1 6 0v8.5a1 1 0 0 1-2 0V8"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    Attach file
-                    <input
-                      type="file"
-                      accept=".pdf,.png,.jpg,.jpeg,.webp,.gif"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) void handleAttach(job.id, file);
-                        e.target.value = '';
-                      }}
-                    />
-                  </label>
-                )}
-              </td>
+      <div className="job-table-scroll">
+        <table className="job-table">
+          <thead>
+            <tr>
+              <th>Job</th>
+              <th>Length</th>
+              <th>Power</th>
+              <th>Start time</th>
+              <th>Ran on</th>
+              <th>Document</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {plan.jobs.map((job) => (
+              <tr key={job.id} className={selectedJobId === job.id ? 'is-selected' : ''}>
+                <td>{job.name}</td>
+                <td>{job.minutes} min</td>
+                <td>{job.power}</td>
+                <td>
+                  <input
+                    type="time"
+                    value={overrides[job.id] ?? job.scheduledStart ?? ''}
+                    onChange={(e) => setOverrides((prev) => ({ ...prev, [job.id]: e.target.value }))}
+                  />
+                </td>
+                <td>
+                  {job.unscheduled ? (
+                    <span className="badge badge--warn">Unscheduled</span>
+                  ) : (
+                    <span className={`badge badge--${job.actualPower}`}>{job.actualPower}</span>
+                  )}
+                </td>
+                <td>
+                  {job.attachment ? (
+                    <span className="job-table__file">
+                      <button
+                        type="button"
+                        className="link-button"
+                        onClick={() => api.downloadAttachment(planId, job.id, job.attachment!.name)}
+                      >
+                        {job.attachment.name}
+                      </button>
+                      <button type="button" className="link-button" onClick={() => handleRemoveAttachment(job.id)}>
+                        Remove
+                      </button>
+                    </span>
+                  ) : (
+                    <label className="job-table__attach">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          d="M18 8.5v7a5 5 0 0 1-10 0V6a3 3 0 0 1 6 0v8.5a1 1 0 0 1-2 0V8"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Attach file
+                      <input
+                        type="file"
+                        accept=".pdf,.png,.jpg,.jpeg,.webp,.gif"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) void handleAttach(job.id, file);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

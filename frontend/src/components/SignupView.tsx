@@ -4,6 +4,7 @@ import { hrefFor } from '../lib/router.js';
 import { ApiClientError } from '../lib/api.js';
 import Mark from './Mark.js';
 import GoogleSignInButton from './GoogleSignInButton.js';
+import PasswordField from './PasswordField.js';
 
 export default function SignupView() {
   const { signup } = useAuth();
@@ -51,11 +52,7 @@ export default function SignupView() {
           Email
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
-        <label>
-          Password
-          <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
-          <span className="field-hint">At least 8 characters.</span>
-        </label>
+        <PasswordField label="Password" value={password} onChange={setPassword} minLength={8} hint="At least 8 characters." />
 
         {error && <div className="form-error">{error}</div>}
 

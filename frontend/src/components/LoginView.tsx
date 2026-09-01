@@ -4,6 +4,7 @@ import { hrefFor } from '../lib/router.js';
 import { ApiClientError } from '../lib/api.js';
 import Mark from './Mark.js';
 import GoogleSignInButton from './GoogleSignInButton.js';
+import PasswordField from './PasswordField.js';
 
 export default function LoginView() {
   const { login } = useAuth();
@@ -42,10 +43,7 @@ export default function LoginView() {
           Email
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
         </label>
-        <label>
-          Password
-          <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
+        <PasswordField label="Password" value={password} onChange={setPassword} />
 
         {error && <div className="form-error">{error}</div>}
 

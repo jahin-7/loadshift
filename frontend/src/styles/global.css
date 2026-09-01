@@ -208,6 +208,32 @@ label {
   color: var(--text-faint);
 }
 
+.password-field {
+  position: relative;
+  display: flex;
+}
+.password-field input {
+  flex: 1;
+  padding-right: 3.4rem;
+}
+.password-field__toggle {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.password-field__toggle:hover {
+  color: var(--text);
+}
+
 .form-error,
 .form-success {
   border-radius: var(--radius);
@@ -326,7 +352,24 @@ label {
   display: flex;
   flex-direction: column;
 }
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--surface-raised);
+  color: var(--text);
+  border: 1px solid var(--line-bright);
+  border-radius: var(--radius-sm);
+}
+.skip-link:focus {
+  top: 0.6rem;
+}
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -334,6 +377,31 @@ label {
   border-bottom: 1px solid var(--line);
   background: var(--surface);
   box-shadow: 0 1px 0 var(--shadow);
+}
+.topbar__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: none;
+}
+.topbar__toggle span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--text);
+  border-radius: 2px;
+}
+.app-footer {
+  padding: 1.25rem 1.75rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  border-top: 1px solid var(--line);
 }
 .brand {
   font-family: var(--font-display);
@@ -916,5 +984,37 @@ label {
 @media (max-width: 720px) {
   .plan-view__grid {
     grid-template-columns: 1fr;
+  }
+
+  .topbar__toggle {
+    display: flex;
+  }
+  .topbar__nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1.1rem 1.75rem 1.4rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 8px 16px var(--shadow);
+    display: none;
+  }
+  .topbar__nav.is-open {
+    display: flex;
+  }
+  .topbar__shop {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .job-table-scroll {
+    overflow-x: auto;
+  }
+  .job-table {
+    min-width: 620px;
   }
 }
